@@ -5,14 +5,17 @@ build-backend = "hatchling.build"
 [project]
 name = "md-star"
 dynamic = ["version"]
-description = ''
+description = 'A Markdown Static Site Generator.'
 readme = "README.md"
 requires-python = ">=3.8,<3.13"
 license = "MIT"
 keywords = [
     "Markdown",
     "Static Site Generator",
-    "website",
+    "Website",
+    "HTML",
+    "Blog",
+    "CMS",
 ]
 authors = [
   { name = "chris", email = "chris1ding1@gmail.com" },
