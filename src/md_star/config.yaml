@@ -1,0 +1,27 @@
+site:
+  url: ""
+  name: ""
+  alternate_name:
+  author: ""
+  locale: "en"
+  keywords:
+    - Blog
+  description: ""
+  sort_by: "created"
+  socials:
+    x: ""
+    instagram: ""
+    github: ""
+    linkedin: ""
+
+paths:
+  content: "content"
+  output: "dist"
+  public: "public"
+  drafts: "draft"
+
+projects:
+  - name: ""
+    description: ""
+    link: ""
+    icon: ""

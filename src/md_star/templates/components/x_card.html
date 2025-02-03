@@ -1,0 +1,10 @@
+{% if x_card and x_card.card_type and x_card.title %}
+<meta name="twitter:card" content="{{ x_card.card_type }}" />
+{% if x_card.site %}
+<meta name="twitter:site" content="{{ '@'+x_card.site }}" />
+{% endif %}
+<meta name="twitter:title" content="{{ x_card.title }}" />
+{% if x_card.description %}
+<meta name="twitter:description" content="{{ x_card.description }}" />
+{% endif %}
+{% endif %}
