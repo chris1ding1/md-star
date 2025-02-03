@@ -1,4 +1,3 @@
-import os
 import shutil
 from pathlib import Path
 
@@ -18,9 +17,9 @@ def cli():
 def init(project_dir: str):
     """Initialize a new MD-Star project"""
     project_path = Path(project_dir).absolute()
-    package_dir = Path(__file__).parent
+    package_dir = Path(__file__).parent.absolute()
 
-    # 创建基本目录
+    # Create basic directories
     dirs = ["content", "content/drafts", "templates", "public"]
     for dir_name in dirs:
         dir_path = project_path / dir_name
@@ -28,7 +27,7 @@ def init(project_dir: str):
             dir_path.mkdir(parents=True)
             click.echo(f"Created directory: {dir_path}")
 
-    # 复制源码目录下的文件
+    # Copy files from source code directory
     for src_dir in ["templates", "public", "content"]:
         src_path = package_dir / src_dir
         if src_path.exists():
@@ -49,12 +48,6 @@ def init(project_dir: str):
         click.echo("Copied config.yaml")
 
     click.echo(f"✨ Project initialized in {project_path}")
-
-    # 自动构建
-    if click.confirm("Would you like to build the site now?"):
-        generator = MarkdownSiteGenerator(str(config_dst))
-        generator.run()
-        click.echo("🎉 Site built successfully!")
 
 
 @cli.command()

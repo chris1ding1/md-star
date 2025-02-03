@@ -11,7 +11,7 @@ from xml.etree import ElementTree as ET
 import frontmatter
 import markdown
 import yaml
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from slugify import slugify
 
 
@@ -26,13 +26,17 @@ class MarkdownSiteGenerator:
     def __init__(self, config_path: str = "config.yaml"):
         """Initialize the static site generator."""
 
+        self.config_path = Path(config_path).absolute()
+        self.project_dir = self.config_path.parent
+
         # Load and parse the YAML site configuration file
         with open(config_path, "r", encoding="utf-8") as f:
             self.config = yaml.safe_load(f)
 
         # Setup Jinja2 template environment
+        templates_dir = self.project_dir / "templates"
         self.jinja_env = Environment(
-            loader=FileSystemLoader("templates"), autoescape=True
+            loader=FileSystemLoader(str(templates_dir)), autoescape=select_autoescape()
         )
 
         # Setup Markdown converter
@@ -277,7 +281,7 @@ class MarkdownSiteGenerator:
         if len(description) > 200:
             processed_description = description[:197] + "..."
 
-        x_account = self.config["site"]["social"].get("x", "")
+        x_account = self.config["site"]["socials"].get("x", "")
         template = self.jinja_env.get_template("components/x_card.html")
         html = template.render(
             x_card={
@@ -292,10 +296,8 @@ class MarkdownSiteGenerator:
     def copy_public_files(self):
         """Copy static files"""
 
-        public_dir = Path(self.config["paths"]["public"])
-        output_dir = Path(self.config["paths"]["output"])
-
-        print(public_dir, output_dir)
+        public_dir = self.project_dir / self.config["paths"]["public"]
+        output_dir = self.project_dir / self.config["paths"]["output"]
 
         shutil.copytree(public_dir, output_dir, dirs_exist_ok=True)
 
