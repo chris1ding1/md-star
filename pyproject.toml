@@ -79,9 +79,9 @@ mdstar = "md_star.cli:main"
 [tool.hatch.build]
 include = [
     "src/md_star/config.yaml",
-    { path = "src/md_star/templates", recursive = true },
-    { path = "src/md_star/content", recursive = true },
-    { path = "src/md_star/public", recursive = true },
+    "src/md_star/templates/**/*",
+    "src/md_star/content/**/*",
+    "src/md_star/public/**/*",
 ]
 
 [tool.hatch.scripts]
