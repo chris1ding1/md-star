@@ -7,7 +7,7 @@ name = "md-star"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.13"
 license = "MIT"
 keywords = [
     "Markdown",
@@ -89,13 +89,12 @@ init = "python -m md_star.cli init"
 build = "python -m md_star.generator"
 
 [tool.hatch.envs.default]
+python = "3.11"
 dependencies = [
     "pytest",
     "pytest-cov",
     "black",
-    "isort",
-    "mypy",
-    "ruff",
+    "isort"
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -104,4 +103,3 @@ format = [
     "black src/ tests/",
     "isort src/ tests/"
 ]
-lint = "ruff check src/ tests/ && mypy src/"
