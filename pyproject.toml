@@ -12,7 +12,7 @@ license = "MIT"
 keywords = [
     "Markdown",
     "Static Site Generator",
-    "website"
+    "website",
 ]
 authors = [
   { name = "chris", email = "chris1ding1@gmail.com" },
@@ -36,7 +36,7 @@ dependencies = [
     "python-frontmatter",
     "python-slugify",
     "PyYAML",
-    "text-unidecode"
+    "text-unidecode",
 ]
 
 [project.urls]
@@ -78,10 +78,10 @@ mdstar = "md_star.cli:main"
 
 [tool.hatch.build]
 include = [
-    "src/md_star/config.yaml"
-    "src/md_star/content/*",
-    "src/md_star/public/*",
-    "src/md_star/templates/*"
+    "src/md_star/config.yaml",
+    { path = "src/md_star/templates", recursive = true },
+    { path = "src/md_star/content", recursive = true },
+    { path = "src/md_star/public", recursive = true },
 ]
 
 [tool.hatch.scripts]
@@ -95,16 +95,13 @@ dependencies = [
     "black",
     "isort",
     "mypy",
-    "ruff"
+    "ruff",
 ]
 
 [tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
+test = "pytest tests/ {args}"
 format = [
-    "black .",
-    "isort ."
+    "black src/ tests/",
+    "isort src/ tests/"
 ]
-lint = [
-    "ruff check .",
-    "mypy ."
-]
+lint = "ruff check src/ tests/ && mypy src/"
