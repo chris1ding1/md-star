@@ -81,7 +81,7 @@ include = [
     "src/md_star/config.yaml"
     "src/md_star/content/*",
     "src/md_star/public/*",
-    "src/md_star/templates/*",
+    "src/md_star/templates/*"
 ]
 
 [tool.hatch.scripts]
@@ -95,16 +95,16 @@ dependencies = [
     "black",
     "isort",
     "mypy",
-    "ruff",
+    "ruff"
 ]
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
 format = [
     "black .",
-    "isort .",
+    "isort ."
 ]
 lint = [
     "ruff check .",
-    "mypy .",
+    "mypy ."
 ]
