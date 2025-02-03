@@ -9,7 +9,11 @@ description = ''
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = []
+keywords = [
+    "Markdown",
+    "Static Site Generator",
+    "website"
+]
 authors = [
   { name = "chris", email = "chris1ding1@gmail.com" },
 ]
@@ -24,7 +28,16 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+    "Click",
+    "Jinja2",
+    "Markdown",
+    "MarkupSafe",
+    "python-frontmatter",
+    "python-slugify",
+    "PyYAML",
+    "text-unidecode"
+]
 
 [project.urls]
 Documentation = "https://github.com/chris1ding1/md-star#readme"
@@ -58,4 +71,40 @@ exclude_lines = [
   "no cov",
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
+]
+
+[project.scripts]
+mdstar = "md_star.cli:main"
+
+[tool.hatch.build]
+include = [
+    "src/md_star/config.yaml"
+    "src/md_star/content/*",
+    "src/md_star/public/*",
+    "src/md_star/templates/*",
+]
+
+[tool.hatch.scripts]
+init = "python -m md_star.cli init"
+build = "python -m md_star.generator"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "isort",
+    "mypy",
+    "ruff",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+format = [
+    "black .",
+    "isort .",
+]
+lint = [
+    "ruff check .",
+    "mypy .",
 ]
