@@ -6,10 +6,12 @@ import click
 
 from md_star.generator import MarkdownSiteGenerator
 
+
 @click.group()
 def cli():
     """MD-Star: A Markdown Static Site Generator"""
     pass
+
 
 @cli.command()
 @click.argument("project_dir", default=".")
@@ -54,6 +56,7 @@ def init(project_dir: str):
         generator.run()
         click.echo("🎉 Site built successfully!")
 
+
 @cli.command()
 def build():
     """Build static site from markdown files"""
@@ -65,8 +68,10 @@ def build():
         click.echo(f"❌ Error: {str(e)}", err=True)
         raise click.Abort()
 
+
 def main():
     cli()
+
 
 if __name__ == "__main__":
     main()
