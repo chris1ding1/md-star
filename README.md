@@ -39,6 +39,13 @@ mdstar build
 mdstar serve [-p 8000]
 ```
 
+### Deploy Cloudflare Pages
+
+Build configuration:
+
+- Build command: pip install md-star && mdstar build
+- Build output: dist
+
 ## License
 
 `md-star` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
