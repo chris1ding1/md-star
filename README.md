@@ -10,10 +10,28 @@
 - [Installation](#installation)
 - [License](#license)
 
+## Features
+
+- Markdown to HTML
+- Lang
+- Schema website name
+- Schema Article
+- X card
+- Sitemap
+- Drafts
+
 ## Installation
 
 ```console
 pip install md-star
+```
+
+## Usage
+
+```console
+mdstar init my-blog
+cd my-blog
+mdstar build
 ```
 
 ## License
