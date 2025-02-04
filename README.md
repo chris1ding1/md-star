@@ -14,12 +14,15 @@
 
 Markdown to HTML
 
-- Lang
-- Schema website name
-- Schema Article
-- X card
-- Sitemap
-- Drafts
+- To HTMl
+  - Lang
+  - Schema website name
+  - Schema Article
+  - X card
+  - Sitemap
+- Other
+  - Drafts
+  - Serve
 
 ## Installation
 
@@ -33,8 +36,7 @@ pip install md-star
 mdstar init my-blog
 cd my-blog
 mdstar build
-
-mdstar serve [-p 8080]
+mdstar serve [-p 8000]
 ```
 
 ## License
