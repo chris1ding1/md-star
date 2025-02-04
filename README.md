@@ -33,6 +33,8 @@ pip install md-star
 mdstar init my-blog
 cd my-blog
 mdstar build
+
+mdstar serve [-p 8080]
 ```
 
 ## License

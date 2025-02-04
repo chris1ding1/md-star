@@ -1,4 +1,6 @@
+import http.server
 import shutil
+import socketserver
 from pathlib import Path
 
 import click
@@ -10,6 +12,23 @@ from md_star.generator import MarkdownSiteGenerator
 def cli():
     """MD-Star: A Markdown Static Site Generator"""
     pass
+
+
+@cli.command()
+@click.option("--port", "-p", default=8000, help="Port to serve on")
+def serve(port):
+    """Start a local development server"""
+
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory="dist", **kwargs)
+
+    with socketserver.TCPServer(("", port), Handler) as httpd:
+        click.echo(f"Serving at http://127.0.0.1:{port}")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            click.echo("\nServer stopped.")
 
 
 @cli.command()
