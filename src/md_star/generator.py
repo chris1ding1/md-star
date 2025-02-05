@@ -40,7 +40,7 @@ class MarkdownSiteGenerator:
         )
 
         # Setup Markdown converter
-        self.md = markdown.Markdown(extensions=["fenced_code", "tables"])
+        self.md = markdown.Markdown(extensions=["fenced_code", "tables", "def_list"])
 
     def run(self):
         """Entry point for static site generation."""
