@@ -1,11 +1,15 @@
 site:
-  url: ""
+  url: "127.0.0.1:8000"
   name: "MD Star"
   alternate_name:
+    - md-star
   author: "Chris"
   locale: "en"
   keywords:
     - Blog
+    - CMS
+    - Markdown
+    - MD Star
   description: "Markdown to HTML"
   sort_by: "created"
   socials:
