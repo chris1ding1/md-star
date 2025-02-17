@@ -316,10 +316,17 @@ class MarkdownSiteGenerator:
     def copy_public_files(self):
         """Copy static files"""
 
+        def ignore_files(_, names):
+            return [
+                n
+                for n in names
+                if n.startswith(".DS_Store") or n.endswith((".swp", ".swo"))
+            ]
+
         public_dir = self.project_dir / self.config["paths"]["public"]
         output_dir = self.project_dir / self.config["paths"]["output"]
 
-        shutil.copytree(public_dir, output_dir, dirs_exist_ok=True)
+        shutil.copytree(public_dir, output_dir, dirs_exist_ok=True, ignore=ignore_files)
 
 
 if __name__ == "__main__":
