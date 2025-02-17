@@ -51,7 +51,11 @@ def init(project_dir: str):
         src_path = package_dir / src_dir
         if src_path.exists():
             for src_file in src_path.rglob("*"):
-                if src_file.is_file() and not src_file.name in ['.DS_Store', '.swp', '.swo']:
+                if src_file.is_file() and not src_file.name in [
+                    ".DS_Store",
+                    ".swp",
+                    ".swo",
+                ]:
                     relative_path = src_file.relative_to(src_path)
                     dst_file = project_path / src_dir / relative_path
                     if not dst_file.exists():
