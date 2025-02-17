@@ -1,12 +1,12 @@
 site:
   url: ""
-  name: ""
+  name: "MD Star"
   alternate_name:
-  author: ""
+  author: "Chris"
   locale: "en"
   keywords:
     - Blog
-  description: ""
+  description: "Markdown to HTML"
   sort_by: "created"
   socials:
     x: ""
