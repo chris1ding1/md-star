@@ -5,6 +5,7 @@ site:
     - md-star
   author: "Chris"
   locale: "en"
+  timezone: "UTC"
   keywords:
     - Blog
     - CMS
