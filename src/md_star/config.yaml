@@ -13,6 +13,7 @@ site:
     - MD Star
   description: "Markdown to HTML"
   sort_by: "created"
+  article_type: "Article"
   socials:
     x: ""
     instagram: ""
