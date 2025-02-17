@@ -17,7 +17,8 @@ Markdown to HTML
 - To HTMl
   - Lang
   - Schema website name
-  - Schema Article
+  - Schema Article (Article, NewsArticle, BlogPosting)
+  - Schema ProfilePage (Person, Organization)
   - X card
   - rel="canonical" link
   - Sitemap
