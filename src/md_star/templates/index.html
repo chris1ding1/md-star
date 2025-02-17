@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% for post in posts %}
+<article>
+  <h2>
+    <a href="{{ post.url }}">
+      {{ post.title }}
+    </a>
+  </h2>
+  {% if post.updated %}
+   <time datetime="{{ post.updated }}">{{ post.updated }}</time>
+  {% endif %}
+</article>
+{% endfor %}
 {% endblock %}
 
 {% block head %}

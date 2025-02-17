@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<article>
+    <header>
+        <h1>{{ post.title }}</h1>
+        {% if post.date %}
+        <time datetime="{{ post.date }}">{{ post.date }}</time>
+        {% endif %}
+    </header>
+    <div>
+        {{ post.content|safe }}
+    </div>
+</article>
 {% endblock %}
 
 {% block head %}
