@@ -9,13 +9,13 @@ from datetime import datetime
 from pathlib import Path
 from xml.dom import minidom
 from xml.etree import ElementTree as ET
-from zoneinfo import ZoneInfo
 
 import arrow
 import frontmatter
 import markdown
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from markdown_it import MarkdownIt
 from slugify import slugify
 
 
@@ -53,7 +53,7 @@ class MarkdownSiteGenerator:
                 try:
                     locale.setlocale(locale.LC_TIME, f"{default_lang}.utf8")
                 except locale.Error:
-                    locale.setlocale(locale.LC_TIME, '')
+                    locale.setlocale(locale.LC_TIME, "")
 
         # Setup Jinja2 template environment
         templates_dir = self.project_dir / "templates"
@@ -62,7 +62,17 @@ class MarkdownSiteGenerator:
         )
 
         # Setup Markdown converter
-        self.md = markdown.Markdown(extensions=["fenced_code", "tables", "def_list"])
+        self.md = markdown.Markdown(
+            extensions=[
+                "fenced_code",
+                "def_list",
+                "pymdownx.tasklist",
+                "pymdownx.superfences",
+                "pymdownx.fancylists",
+                "pymdownx.saneheaders",
+            ]
+        )
+        self.md_parser = MarkdownIt("commonmark")
 
     def run(self):
         """Entry point for static site generation."""
@@ -155,8 +165,16 @@ class MarkdownSiteGenerator:
             slug_source = self.config["name"].get("name", "untitled")
         slug = slugify(slug_source)
 
-        created = str(post.metadata.get("created", "")) if post.metadata.get("created") else ""
-        updated = str(post.metadata.get("updated", "")) if post.metadata.get("updated") else ""
+        created = (
+            str(post.metadata.get("created", ""))
+            if post.metadata.get("created")
+            else ""
+        )
+        updated = (
+            str(post.metadata.get("updated", ""))
+            if post.metadata.get("updated")
+            else ""
+        )
 
         created_data = self.parse_datetime(created, lang)
         updated_data = self.parse_datetime(updated, lang)
@@ -177,6 +195,14 @@ class MarkdownSiteGenerator:
         if updated_data["iso"]:
             schema_article["dateModified"] = updated_data["iso"]
 
+        description = post.metadata.get("description", "")
+        if not description:
+            text_content = self.get_plain_text(post.content)
+            if len(text_content) > 157:
+                description = text_content[:157] + "..."
+            else:
+                description = text_content[:160]
+
         path = f"/posts/{slug}"
         return {
             "content": html_content,
@@ -190,13 +216,13 @@ class MarkdownSiteGenerator:
             "url": path,
             "file_path": f"{path}.html",
             "lang": lang,
-            "description": post.metadata.get("description", ""),
+            "description": description,
             "keywords": post.metadata.get("keywords", []),
             "schema_article": json.dumps(schema_article, ensure_ascii=False),
             "x_card_html": self.generate_x_card(
                 card_type=self.X_CARD_TYPE_SUMMARY,
                 title=title,
-                description=post.metadata.get("description", ""),
+                description=description,
             ),
             "canonical_link_html": self.generate_canonical_link(
                 path=path,
@@ -415,6 +441,15 @@ class MarkdownSiteGenerator:
         except (ValueError, TypeError):
             pass
         return result
+
+    def get_plain_text(self, markdown_content: str) -> str:
+        """Get plain text from markdown content"""
+        tokens = self.md_parser.parse(markdown_content)
+        text_content = []
+        for token in tokens:
+            if token.type == "inline":
+                text_content.append(token.content)
+        return " ".join(" ".join(text_content).split())
 
 
 if __name__ == "__main__":
