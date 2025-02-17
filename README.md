@@ -26,6 +26,7 @@ Markdown to HTML
   - Drafts
   - Serve
   - Timezone
+  - Slug
 
 ## Installation
 
