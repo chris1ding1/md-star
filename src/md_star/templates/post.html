@@ -4,7 +4,7 @@
 <article>
     <header>
         <h1>{{ post.title }}</h1>
-        {% if post.updated %}
+        {% if post.updated_humanized %}
         <time datetime="{{ post.updated_iso }}" title="{{ post.updated }}">{{ post.updated_humanized }}</time>
         {% endif %}
     </header>
