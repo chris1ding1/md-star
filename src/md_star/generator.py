@@ -27,6 +27,11 @@ class MarkdownSiteGenerator:
 
     X_CARD_TYPE_SUMMARY = "summary"
 
+    ARTICLE_TYPE_ARTICLE = "Article"
+    ARTICLE_TYPE_NEWS = "NewsArticle"
+    ARTICLE_TYPE_BLOG = "BlogPosting"
+    VALID_ARTICLE_TYPES = [ARTICLE_TYPE_ARTICLE, ARTICLE_TYPE_NEWS, ARTICLE_TYPE_BLOG]
+
     def __init__(self, config_path: str = "config.yaml"):
         """Initialize the static site generator."""
 
@@ -42,6 +47,14 @@ class MarkdownSiteGenerator:
 
         self.config["site"].setdefault("timezone", "UTC")
         self.config["site"].setdefault("locale", "en")
+        self.config["site"].setdefault("article_type", self.ARTICLE_TYPE_ARTICLE)
+
+        if self.config["site"].get("article_type") not in self.VALID_ARTICLE_TYPES:
+            print(f"Warning: Invalid article_type: {self.config['site'].get('article_type')}. "
+                  f"Must be one of: {', '.join(self.VALID_ARTICLE_TYPES)}. "
+                  f"Automatically using default: {self.ARTICLE_TYPE_ARTICLE}")
+            self.config["site"]["article_type"] = self.ARTICLE_TYPE_ARTICLE
+
 
         default_lang = self.config["site"].get("locale")
         try:
@@ -180,7 +193,7 @@ class MarkdownSiteGenerator:
         updated_data = self.parse_datetime(updated, lang)
         schema_article = {
             "@context": "https://schema.org",
-            "@type": "NewsArticle",
+            "@type": self.config["site"].get("article_type"),
             "headline": title,
         }
 
