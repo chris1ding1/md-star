@@ -3,11 +3,15 @@ A Python static site generator that converts Markdown files to HTML websites.
 """
 
 import json
+import locale
 import shutil
+from datetime import datetime
 from pathlib import Path
 from xml.dom import minidom
 from xml.etree import ElementTree as ET
+from zoneinfo import ZoneInfo
 
+import arrow
 import frontmatter
 import markdown
 import yaml
@@ -32,6 +36,24 @@ class MarkdownSiteGenerator:
         # Load and parse the YAML site configuration file
         with open(config_path, "r", encoding="utf-8") as f:
             self.config = yaml.safe_load(f)
+
+        if "site" not in self.config:
+            self.config["site"] = {}
+
+        self.config["site"].setdefault("timezone", "UTC")
+        self.config["site"].setdefault("locale", "en")
+
+        default_lang = self.config["site"].get("locale")
+        try:
+            locale.setlocale(locale.LC_TIME, default_lang)
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_TIME, f"{default_lang}.UTF-8")
+            except locale.Error:
+                try:
+                    locale.setlocale(locale.LC_TIME, f"{default_lang}.utf8")
+                except locale.Error:
+                    locale.setlocale(locale.LC_TIME, '')
 
         # Setup Jinja2 template environment
         templates_dir = self.project_dir / "templates"
@@ -112,11 +134,7 @@ class MarkdownSiteGenerator:
         # Get language
         file_stem = file_path.stem
         lang_parts = file_stem.split(".")
-        lang = (
-            lang_parts[-1]
-            if len(lang_parts) > 1
-            else self.config["site"].get("locale", "en")
-        )
+        lang = lang_parts[-1] if len(lang_parts) > 1 else self.config["site"]["locale"]
 
         # Load post.md content
         post = frontmatter.load(str(file_path), disable_yaml_loader=True)
@@ -137,6 +155,11 @@ class MarkdownSiteGenerator:
             slug_source = self.config["name"].get("name", "untitled")
         slug = slugify(slug_source)
 
+        created = str(post.metadata.get("created", "")) if post.metadata.get("created") else ""
+        updated = str(post.metadata.get("updated", "")) if post.metadata.get("updated") else ""
+
+        created_data = self.parse_datetime(created, lang)
+        updated_data = self.parse_datetime(updated, lang)
         schema_article = {
             "@context": "https://schema.org",
             "@type": "NewsArticle",
@@ -149,13 +172,21 @@ class MarkdownSiteGenerator:
 
         if author:
             schema_article["author"] = author
+        if created_data["iso"]:
+            schema_article["datePublished"] = created_data["iso"]
+        if updated_data["iso"]:
+            schema_article["dateModified"] = updated_data["iso"]
 
         path = f"/posts/{slug}"
         return {
             "content": html_content,
             "title": title,
-            "created": post.metadata.get("created", ""),
-            "updated": post.metadata.get("updated", ""),
+            "created": created_data["original"],
+            "updated": updated_data["original"],
+            "created_humanized": created_data["humanized"],
+            "updated_humanized": updated_data["humanized"],
+            "created_iso": created_data["iso"],
+            "updated_iso": updated_data["iso"],
             "url": path,
             "file_path": f"{path}.html",
             "lang": lang,
@@ -245,12 +276,12 @@ class MarkdownSiteGenerator:
             loc = ET.SubElement(url, "loc")
             loc.text = self.config["site"]["url"] + post["url"]
             # last modified
-            if post["updated"]:
+            if post["updated_iso"]:
                 lastmod = ET.SubElement(url, "lastmod")
-                lastmod.text = post["updated"].strftime("%Y-%m-%d")
-            elif post["created"]:
+                lastmod.text = post["updated_iso"]
+            elif post["created_iso"]:
                 lastmod = ET.SubElement(url, "lastmod")
-                lastmod.text = post["created"].strftime("%Y-%m-%d")
+                lastmod.text = post["created_iso"]
 
         # Add about page
         url = ET.SubElement(urlset, "url")
@@ -327,6 +358,63 @@ class MarkdownSiteGenerator:
         output_dir = self.project_dir / self.config["paths"]["output"]
 
         shutil.copytree(public_dir, output_dir, dirs_exist_ok=True, ignore=ignore_files)
+
+    def parse_datetime(self, date_str: str, lang: str = None) -> dict:
+        """
+        Parse datetime string and return various formatted versions.
+        """
+        result = {
+            "original": date_str,
+            "datetime": None,
+            "iso": "",
+            "humanized": date_str,
+        }
+
+        if not date_str:
+            return result
+
+        try:
+            try:
+                dt = arrow.get(date_str)
+            except (ValueError, TypeError):
+                formats = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"]
+                for fmt in formats:
+                    try:
+                        parsed = datetime.strptime(date_str, fmt)
+                        dt = arrow.get(parsed)
+                        break
+                    except ValueError:
+                        continue
+                else:
+                    return result
+
+            dt = dt.to(self.config["site"]["timezone"])
+            result["datetime"] = dt.datetime
+
+            if " " in date_str:
+                base = date_str.replace(" ", "T")
+                result["iso"] = f"{base}{dt.format('Z')}"
+            elif "T" in date_str:  # ISO 格式
+                if "+" in date_str or "-" in date_str[10:]:
+                    result["iso"] = date_str
+                else:
+                    result["iso"] = f"{date_str}{dt.format('Z')}"
+            else:
+                result["iso"] = f"{date_str}{dt.format('Z')}"
+
+            now = arrow.now(self.config["site"]["timezone"])
+            if (now - dt).days <= 30:
+                locale_to_use = lang or self.config["site"].get("locale")
+                try:
+                    result["humanized"] = dt.humanize(locale=locale_to_use.lower())
+                except (ValueError, NotImplementedError):
+                    result["humanized"] = date_str
+            else:
+                result["humanized"] = date_str
+
+        except (ValueError, TypeError):
+            pass
+        return result
 
 
 if __name__ == "__main__":
