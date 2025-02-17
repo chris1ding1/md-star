@@ -84,6 +84,7 @@ class MarkdownSiteGenerator:
                 },
                 post=post_data,
                 x_card_html=post_data["x_card_html"],
+                canonical_link_html=post_data["canonical_link_html"],
             )
 
             # Save post page
@@ -149,13 +150,14 @@ class MarkdownSiteGenerator:
         if author:
             schema_article["author"] = author
 
+        path = f"/posts/{slug}"
         return {
             "content": html_content,
             "title": title,
             "created": post.metadata.get("created", ""),
             "updated": post.metadata.get("updated", ""),
-            "url": f"/posts/{slug}",
-            "file_path": f"/posts/{slug}.html",
+            "url": path,
+            "file_path": f"{path}.html",
             "lang": lang,
             "description": post.metadata.get("description", ""),
             "keywords": post.metadata.get("keywords", []),
@@ -164,6 +166,9 @@ class MarkdownSiteGenerator:
                 card_type=self.X_CARD_TYPE_SUMMARY,
                 title=title,
                 description=post.metadata.get("description", ""),
+            ),
+            "canonical_link_html": self.generate_canonical_link(
+                path=path,
             ),
         }
 
@@ -189,6 +194,9 @@ class MarkdownSiteGenerator:
                 title=self.config["site"]["name"],
                 description=self.config["site"]["description"],
             ),
+            canonical_link_html=self.generate_canonical_link(
+                path="/",
+            ),
         )
 
         output_file = output_dir / "index.html"
@@ -210,6 +218,9 @@ class MarkdownSiteGenerator:
                 card_type=self.X_CARD_TYPE_SUMMARY,
                 title="About",
                 description="About me",
+            ),
+            canonical_link_html=self.generate_canonical_link(
+                path="/about",
             ),
         )
 
@@ -292,6 +303,15 @@ class MarkdownSiteGenerator:
             }
         )
         return html
+
+    def generate_canonical_link(self, path: str) -> str:
+        """Generate canonical link"""
+        site_url = self.config["site"].get("url", "")
+        if not site_url:
+            return ""
+
+        url = site_url.rstrip("/") + "/" + path.lstrip("/")
+        return f'<link rel="canonical" href="{url}">'
 
     def copy_public_files(self):
         """Copy static files"""
