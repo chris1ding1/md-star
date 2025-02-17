@@ -8,8 +8,8 @@
       {{ post.title }}
     </a>
   </h2>
-  {% if post.updated %}
-   <time datetime="{{ post.updated }}">{{ post.updated }}</time>
+  {% if post.updated_humanized %}
+   <time datetime="{{ post.updated_iso }}" title="{{ post.updated }}">{{ post.updated_humanized }}</time>
   {% endif %}
 </article>
 {% endfor %}
