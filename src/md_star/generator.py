@@ -50,11 +50,12 @@ class MarkdownSiteGenerator:
         self.config["site"].setdefault("article_type", self.ARTICLE_TYPE_ARTICLE)
 
         if self.config["site"].get("article_type") not in self.VALID_ARTICLE_TYPES:
-            print(f"Warning: Invalid article_type: {self.config['site'].get('article_type')}. "
-                  f"Must be one of: {', '.join(self.VALID_ARTICLE_TYPES)}. "
-                  f"Automatically using default: {self.ARTICLE_TYPE_ARTICLE}")
+            print(
+                f"Warning: Invalid article_type: {self.config['site'].get('article_type')}. "
+                f"Must be one of: {', '.join(self.VALID_ARTICLE_TYPES)}. "
+                f"Automatically using default: {self.ARTICLE_TYPE_ARTICLE}"
+            )
             self.config["site"]["article_type"] = self.ARTICLE_TYPE_ARTICLE
-
 
         default_lang = self.config["site"].get("locale")
         try:
@@ -275,6 +276,34 @@ class MarkdownSiteGenerator:
     def generate_about(self, output_dir: Path):
         """Generate about page"""
 
+        if self.config["site"]["about"].get("name", ""):
+            schema_profile_page = {
+                "@context": "https://schema.org",
+                "@type": "ProfilePage",
+                "mainEntity": {
+                    "@type": self.config["site"]["about"].get("type"),
+                    "name": self.config["site"]["about"].get("name"),
+                },
+            }
+
+            if self.config["site"]["about"].get("alternate_name"):
+                schema_profile_page["mainEntity"]["alternateName"] = self.config[
+                    "site"
+                ]["about"]["alternate_name"]
+
+            if self.config["site"]["about"].get("description"):
+                schema_profile_page["mainEntity"]["description"] = self.config["site"][
+                    "about"
+                ].get("description")
+
+            if self.config["site"]["about"].get("same_as"):
+                same_as = self.config["site"]["about"].get("same_as")
+                schema_profile_page["mainEntity"]["sameAs"] = (
+                    [same_as] if isinstance(same_as, str) else same_as
+                )
+        else:
+            schema_profile_page = {}
+
         template = self.jinja_env.get_template("about.html")
         html = template.render(
             site={**self.config["site"]},
@@ -292,6 +321,7 @@ class MarkdownSiteGenerator:
             canonical_link_html=self.generate_canonical_link(
                 path="/about",
             ),
+            schema_profile_page=json.dumps(schema_profile_page, ensure_ascii=False),
         )
 
         output_file = output_dir / "about.html"
