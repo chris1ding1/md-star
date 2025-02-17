@@ -25,6 +25,7 @@ Markdown to HTML
 - Other
   - Drafts
   - Serve
+  - Timezone
 
 ## Installation
 
