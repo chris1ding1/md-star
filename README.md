@@ -19,6 +19,7 @@ Markdown to HTML
   - Schema website name
   - Schema Article
   - X card
+  - rel="canonical" link
   - Sitemap
 - Other
   - Drafts
