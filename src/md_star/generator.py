@@ -84,6 +84,7 @@ class MarkdownSiteGenerator:
                 "pymdownx.superfences",
                 "pymdownx.fancylists",
                 "pymdownx.saneheaders",
+                "toc",
             ]
         )
         self.md_parser = MarkdownIt("commonmark")
