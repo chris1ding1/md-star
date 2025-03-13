@@ -85,7 +85,13 @@ class MarkdownSiteGenerator:
                 "pymdownx.fancylists",
                 "pymdownx.saneheaders",
                 "toc",
-            ]
+            ],
+            extension_configs={
+                'toc': {
+                    'slugify': lambda value, separator: slugify(value, separator=separator, allow_unicode=True),
+                    'permalink': True,
+                }
+            }
         )
         self.md_parser = MarkdownIt("commonmark")
 
