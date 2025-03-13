@@ -21,12 +21,13 @@ Markdown to HTML
   - Schema ProfilePage (Person, Organization)
   - X card
   - rel="canonical" link
-  - Sitemap
+  - Heading anchors
 - Other
   - Drafts
   - Serve
   - Timezone
   - Slug
+  - Sitemap
 
 ## Installation
 
